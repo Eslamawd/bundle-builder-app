@@ -247,7 +247,3 @@ Potential enhancements on the roadmap include:
 # 📝 License
 
 This project is licensed under the **MIT License**.
-
-```
-
-```
