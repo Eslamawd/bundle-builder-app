@@ -13,7 +13,6 @@ type Action =
   | { type: "SET_ACTIVE_STEP"; payload: number }
   | { type: "HYDRATE_STORE"; payload: AppState };
 
-// الـ Seed المبدئي عشان يطابق صور الديزاين بالظبط أول ما الصفحة تفتح
 const initialCartState: CartState = {
   "wyze-cam-v4": { white: 1 },
   "wyze-cam-pan-v3": { white: 2 },
@@ -39,17 +38,30 @@ function bundleReducer(state: AppState, action: Action): AppState {
     case "SET_QUANTITY": {
       const { productId, variantId, quantity } = action.payload;
       const targetQty = Math.max(0, quantity);
+
+      const updatedCart = { ...state.cart };
+      const productVariants = { ...(updatedCart[productId] || {}) };
+
+      if (targetQty === 0) {
+        // إذا أصبحت الكمية 0، نحذف الـ Variant تماماً لتنظيف السلة
+        delete productVariants[variantId];
+      } else {
+        productVariants[variantId] = targetQty;
+      }
+
+      // إذا أصبح المنتج لا يحتوي على أي Variant نشط، نحذف المنتج بالكامل من السلة
+      if (Object.keys(productVariants).length === 0) {
+        delete updatedCart[productId];
+      } else {
+        updatedCart[productId] = productVariants;
+      }
+
       return {
         ...state,
-        cart: {
-          ...state.cart,
-          [productId]: {
-            ...(state.cart[productId] || {}),
-            [variantId]: targetQty,
-          },
-        },
+        cart: updatedCart,
       };
     }
+
     case "SET_ACTIVE_VARIANT": {
       const { productId, variantId } = action.payload;
       return {
@@ -60,6 +72,7 @@ function bundleReducer(state: AppState, action: Action): AppState {
         },
       };
     }
+
     case "SET_ACTIVE_STEP":
       return { ...state, activeStep: action.payload };
 
@@ -84,13 +97,12 @@ export const BundleProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [state, dispatch] = useReducer(bundleReducer, initialState);
 
-  // استرجاع الداتا من الـ LocalStorage لو موجودة عند التحميل
+  // استرجاع الداتا فوراً عند التحميل لمنع الـ Flash للبيانات القديمة
   useEffect(() => {
     const saved = localStorage.getItem("wyze_bundle_system_41909");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // نتأكد إن البيانات مش null وفيها الـ cart الأساسي
         if (parsed && typeof parsed === "object" && parsed.cart) {
           dispatch({ type: "HYDRATE_STORE", payload: parsed });
         }
@@ -119,7 +131,6 @@ export const BundleProvider: React.FC<{ children: React.ReactNode }> = ({
     dispatch({ type: "SET_ACTIVE_STEP", payload: stepNumber });
   };
 
-  // ميزة الحفظ بناءً على طلبهم "Save my system for later"
   const saveSystem = () => {
     localStorage.setItem("wyze_bundle_system_41909", JSON.stringify(state));
     alert("Your system configuration has been successfully saved! 🎉");
