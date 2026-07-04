@@ -145,9 +145,8 @@ Install the latest LTS version of **Node.js** before running the project.
 1. **Clone the repository:**
 
 ```bash
-git clone [https://github.com/Eslamawd/bundle-builder-app.git](https://github.com/Eslamawd/bundle-builder-app.git)
+git clone https://github.com/Eslamawd/bundle-builder-app.git
 cd bundle-builder-app
-
 ```
 
 2. **Install node dependencies:**
