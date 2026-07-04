@@ -15,7 +15,7 @@ Designed with a reusable, component-driven architecture and centralized state ma
 
 - **Responsive UI**
   - Mobile-first design with adaptive layouts.
-  - Product cards display horizontally on smaller screens and transition into a centered grid on desktop.
+  - Product cards display horizontally on smaller screens (flex-row) and transition into a centered grid on desktop (lg:flex-col).
 
 - **Variant Management**
   - Switch between product variants (such as colors).
@@ -26,17 +26,17 @@ Designed with a reusable, component-driven architecture and centralized state ma
   - Centralized handling of active steps, selected products, variants, and quantities.
 
 - **Reusable Product Components**
-  - Shared `ProductCard` component used across multiple features.
+  - Shared `ProductCard` component used across multiple features (Accordion & ReviewPanel).
   - Eliminates duplicate UI logic and improves maintainability.
 
 - **Interactive Quantity Controls**
   - Built-in stepper component.
   - Automatic product selection/deselection.
-  - Safe event handling using `e.stopPropagation()`.
+  - Safe event handling using `e.stopPropagation()` to prevent unexpected card selection.
 
 - **Live Review Panel**
   - Displays selected products instantly.
-  - Calculates totals in real time.
+  - Calculates totals and applied discounts in real time.
   - Validates bundle completion before submission.
 
 - **Strict TypeScript Support**
@@ -46,12 +46,10 @@ Designed with a reusable, component-driven architecture and centralized state ma
 
 # 🧰 Tech Stack
 
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- React Context API
-- React Hooks
+- **Frontend:** React 18+, TypeScript, Tailwind CSS
+- **Build Tool:** Vite
+- **State Management:** React Context API + Reducers
+- **Icons & Styling:** Tailwind CSS Primitives & Line-clamp utilities
 
 ---
 
@@ -62,19 +60,20 @@ The application follows a modular, feature-based **Atomic Architecture** pattern
 ```text
 src/
 ├── components/
-│   ├── builder/                # Feature-specific components for the Bundle onboarding
-│   │   └── Accordion.tsx       # Step wrapper and wizard controller
-│   ├── review/                 # Summary and checkout flow features
-│   │   └── ReviewPanel.tsx     # Reviews all selected steps and dispatches data
-│   └── ui/                     # Reusable presentation components (Atomic Primitives)
-│       ├── Stepper.tsx         # Controlled quantity counter primitive
-│       └── ProductCard.tsx     # Context-aware, fully responsive shared product card
+│   ├── builder/          # Feature-specific components for the Bundle onboarding
+│   │   └── Accordion.tsx   # Step wrapper and wizard controller
+│   ├── review/           # Summary and checkout flow features
+│   │   └── ReviewPanel.tsx # Reviews all selected steps and dispatches data
+│   └── ui/               # Reusable presentation components (Atomic Primitives)
+│       ├── Stepper.tsx     # Controlled quantity counter primitive
+│       └── ProductCard.tsx # Context-aware, fully responsive shared product card
 ├── context/
-│   └── BundleContext.tsx       # Centralized State Management (Reducer + State Actions)
+│   └── BundleContext.tsx # Centralized State Management (Reducer + State Actions)
 ├── types/
-│   └── bundle.ts               # TypeScript strict interfaces (Step, Product, Variant, Cart)
-├── App.tsx                     # Main application entry layout
+│   └── bundle.ts         # TypeScript strict interfaces (Step, Product, Variant, Cart)
+├── App.tsx               # Main application entry layout
 └── main.tsx
+
 ```
 
 ---
@@ -84,8 +83,7 @@ src/
 ## Context-Driven State Management
 
 The application uses a centralized React Context with reducer-based state updates.
-
-The shopping cart is represented using a nested record structure:
+The shopping cart data is structured using a nested record pattern to guarantee $O(1)$ fast lookups:
 
 ```typescript
 type CartState = Record<ProductId, Record<VariantId, Quantity>>;
@@ -93,46 +91,44 @@ type CartState = Record<ProductId, Record<VariantId, Quantity>>;
 
 This approach provides:
 
-- Fast lookups
-- Immutable updates
-- Scalable state management
+- Fast lookups and elimination of array loops (`.find()`)
+- Immutable state updates via clean reducers
+- Scalable state management for highly customizable components
 - Clean separation of business logic
 
 ---
 
 ## Reusable UI Components
 
-The shared `ProductCard` component is reused throughout the application, including:
+The shared `ProductCard` component is isolated from state initialization and reused seamlessly throughout the application:
 
-- Bundle Accordion
-- Review Panel
+- **Bundle Accordion Layout:** Fits perfectly inside the responsive dynamic grids.
+- **Review Panel Checkout Flow:** Re-rendered efficiently to list selected elements.
 
-This minimizes duplicated code while keeping UI behavior consistent.
+This minimizes duplicated layout code while keeping visual representation and responsiveness perfectly consistent.
 
 ---
 
 ## Event Propagation Safety
 
-Interactive child components (variant selectors and quantity steppers) prevent unwanted parent interactions using:
+Interactive child components (variant buttons, links, and quantity counters) prevent unwanted parent selection loops using:
 
 ```tsx
 e.stopPropagation();
 ```
 
-This guarantees predictable UI behavior when nested inside clickable cards.
+This guarantees predictable UI behavior when nested deep inside highly-clickable container wrappers.
 
 ---
 
 ## Responsive Design
 
-The application relies entirely on Tailwind CSS responsive utilities:
+The application relies entirely on Tailwind CSS responsive mobile-first utilities:
 
-- `sm:`
-- `md:`
-- `lg:`
-- `xl:`
+- `sm:` / `md:` (Mobile & Tablet horizontal flex layouts)
+- `lg:` / `xl:` (Desktop grid layouts)
 
-No JavaScript screen listeners are required, resulting in a lightweight and performant implementation.
+No expensive JavaScript screen resize event listeners are required, resulting in zero overhead and a highly-performant Lighthouse scoring.
 
 ---
 
@@ -140,60 +136,63 @@ No JavaScript screen listeners are required, resulting in a lightweight and perf
 
 ## Prerequisites
 
-Install the latest version of **Node.js** before running the project.
+Install the latest LTS version of **Node.js** before running the project.
 
 ---
 
-## Installation
+## Installation & Setup
 
-Clone the repository:
+1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/Eslamawd/bundle-builder-app.git
+git clone [https://github.com/Eslamawd/bundle-builder-app.git](https://github.com/Eslamawd/bundle-builder-app.git)
 cd bundle-builder-app
+
 ```
 
-Install dependencies:
+2. **Install node dependencies:**
 
 ```bash
 npm install
+
 ```
 
-Start the development server:
+3. **Start the local development server:**
 
 ```bash
 npm run dev
+
 ```
 
-Build for production:
+4. **Build production optimized bundles:**
 
 ```bash
 npm run build
+
 ```
 
-Preview the production build locally:
+5. **Preview the local production build safely:**
 
 ```bash
 npm run preview
+
 ```
 
 ---
 
 # 📜 Available Scripts
 
-| Command           | Description                           |
-| ----------------- | ------------------------------------- |
-| `npm run dev`     | Starts the development server         |
-| `npm run build`   | Creates a production build            |
-| `npm run preview` | Previews the production build locally |
+| Command           | Description                                                      |
+| ----------------- | ---------------------------------------------------------------- |
+| `npm run dev`     | Starts the Vite development server locally                       |
+| `npm run build`   | Compiles and minifies production assets inside `/dist`           |
+| `npm run preview` | Spins up a local Node server to preview production build bundles |
 
 ---
 
 # 🛠️ Example Data Structure
 
-The application consumes strongly typed data models.
-
-Example:
+The application consumes strongly typed data models passing down the component tree.
 
 ```typescript
 const sampleSteps: Step[] = [
@@ -236,18 +235,20 @@ const sampleSteps: Step[] = [
 
 # 🚀 Future Improvements
 
-Potential enhancements include:
+Potential enhancements on the roadmap include:
 
-- Persist bundle selections using Local Storage
-- Add animations with Framer Motion
-- Unit testing with Vitest
-- Accessibility improvements (ARIA)
-- Dark mode support
-- Backend API integration
-- Authentication and user accounts
+- [ ] Persist active user selections inside `LocalStorage` to protect against hard-reloads.
+- [ ] Add smooth micro-interactions and transitions using `Framer Motion`.
+- [ ] Integrate robust component unit testing using `Vitest` and `React Testing Library`.
+- [ ] Enhance semantic accessibility tags and full screen-reader orchestration (ARIA landmarks).
+- [ ] Implement dark mode layout support.
 
 ---
 
 # 📝 License
 
 This project is licensed under the **MIT License**.
+
+```
+
+```
