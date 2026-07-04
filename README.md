@@ -59,21 +59,21 @@ Designed with a reusable, component-driven architecture and centralized state ma
 
 The application follows a modular, feature-based **Atomic Architecture** pattern. This separates global state logic, shared UI primitives, and layout-specific features to guarantee high reusability and clean code.
 
-````text
+```text
 src/
 ├── components/
-│   ├── builder/          # Feature-specific components for the Bundle onboarding
-│   │   └── Accordion.tsx   # Step wrapper and wizard controller
-│   ├── review/           # Summary and checkout flow features
-│   │   └── ReviewPanel.tsx # Reviews all selected steps and dispatches data
-│   └── ui/               # Reusable presentation components (Atomic Primitives)
-│       ├── Stepper.tsx     # Controlled quantity counter primitive
-│       └── ProductCard.tsx # Context-aware, fully responsive shared product card
+│   ├── builder/                # Feature-specific components for the Bundle onboarding
+│   │   └── Accordion.tsx       # Step wrapper and wizard controller
+│   ├── review/                 # Summary and checkout flow features
+│   │   └── ReviewPanel.tsx     # Reviews all selected steps and dispatches data
+│   └── ui/                     # Reusable presentation components (Atomic Primitives)
+│       ├── Stepper.tsx         # Controlled quantity counter primitive
+│       └── ProductCard.tsx     # Context-aware, fully responsive shared product card
 ├── context/
-│   └── BundleContext.tsx # Centralized State Management (Reducer + State Actions)
+│   └── BundleContext.tsx       # Centralized State Management (Reducer + State Actions)
 ├── types/
-│   └── bundle.ts         # TypeScript strict interfaces (Step, Product, Variant, Cart)
-├── App.tsx               # Main application entry layout
+│   └── bundle.ts               # TypeScript strict interfaces (Step, Product, Variant, Cart)
+├── App.tsx                     # Main application entry layout
 └── main.tsx
 ```
 
@@ -89,7 +89,7 @@ The shopping cart is represented using a nested record structure:
 
 ```typescript
 type CartState = Record<ProductId, Record<VariantId, Quantity>>;
-````
+```
 
 This approach provides:
 
